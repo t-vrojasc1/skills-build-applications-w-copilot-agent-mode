@@ -1,10 +1,8 @@
 import { startServer } from './index';
 
-const port = Number(process.env.PORT || 8000);
-
 const apiBaseUrl = process.env.CODESPACE_NAME
   ? `https://${process.env.CODESPACE_NAME}-8000.app.github.dev`
-  : `http://localhost:${port}`;
+  : 'http://localhost:8000';
 
 console.log(`API Base URL: ${apiBaseUrl}`);
 
