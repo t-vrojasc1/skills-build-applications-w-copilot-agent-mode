@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getCollection } from '../api';
+import { apiBase, getCollection } from '../api';
 
 export default function Leaderboard() {
   const [leaderboard, setLeaderboard] = useState([]);
@@ -7,7 +7,8 @@ export default function Leaderboard() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    getCollection('/api/leaderboard/', 'Unable to load leaderboard.')
+    fetch(`${apiBase}/api/leaderboard/`)
+      .then((response) => getCollection(response, 'Unable to load leaderboard.'))
       .then(setLeaderboard)
       .catch((requestError) => setError(requestError.message))
       .finally(() => setLoading(false));

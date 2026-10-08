@@ -17,8 +17,10 @@ export default function Activities() {
 
   useEffect(() => {
     Promise.all([
-      getCollection('/api/activities/', 'Unable to load activities.'),
-      getCollection('/api/users/', 'Unable to load athletes.'),
+      fetch(`${apiBase}/api/activities/`).then((response) =>
+        getCollection(response, 'Unable to load activities.')),
+      fetch(`${apiBase}/api/users/`).then((response) =>
+        getCollection(response, 'Unable to load athletes.')),
     ])
       .then(([activityData, userData]) => {
         setActivities(activityData);

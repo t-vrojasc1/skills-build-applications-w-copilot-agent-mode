@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getCollection } from '../api';
+import { apiBase, getCollection } from '../api';
 
 export default function Workouts() {
   const [workouts, setWorkouts] = useState([]);
@@ -7,7 +7,8 @@ export default function Workouts() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    getCollection('/api/workouts/', 'Unable to load workouts.')
+    fetch(`${apiBase}/api/workouts/`)
+      .then((response) => getCollection(response, 'Unable to load workouts.'))
       .then(setWorkouts)
       .catch((requestError) => setError(requestError.message))
       .finally(() => setLoading(false));

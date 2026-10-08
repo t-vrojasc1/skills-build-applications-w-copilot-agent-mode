@@ -2,8 +2,7 @@ export const apiBase = import.meta.env.VITE_CODESPACE_NAME
   ? `https://${import.meta.env.VITE_CODESPACE_NAME}-8000.app.github.dev`
   : 'http://localhost:8000';
 
-export async function getCollection(path, errorMessage = 'Unable to load data.') {
-  const response = await fetch(`${apiBase}${path}`);
+export async function getCollection(response, errorMessage = 'Unable to load data.') {
   const data = await response.json();
 
   if (!response.ok) {

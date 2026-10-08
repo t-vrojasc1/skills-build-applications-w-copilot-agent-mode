@@ -15,7 +15,8 @@ export default function Users() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    getCollection('/api/users/', 'Unable to load athletes.')
+    fetch(`${apiBase}/api/users/`)
+      .then((response) => getCollection(response, 'Unable to load athletes.'))
       .then(setUsers)
       .catch((requestError) => setError(requestError.message))
       .finally(() => setLoading(false));
