@@ -1,20 +1,11 @@
 import { useEffect, useState } from 'react';
-import { apiBase } from '../api';
+import { apiBase, getCollection } from '../api';
 
 const initialForm = {
   user: '',
   type: 'run',
   durationMinutes: '',
 };
-
-async function getCollection(path) {
-  const response = await fetch(`${apiBase}${path}`);
-  const data = await response.json();
-  if (!response.ok) {
-    throw new Error(data.error || 'Unable to load activity data.');
-  }
-  return data;
-}
 
 export default function Activities() {
   const [activities, setActivities] = useState([]);
@@ -26,8 +17,8 @@ export default function Activities() {
 
   useEffect(() => {
     Promise.all([
-      getCollection('/api/activities/'),
-      getCollection('/api/users/'),
+      getCollection('/api/activities/', 'Unable to load activities.'),
+      getCollection('/api/users/', 'Unable to load athletes.'),
     ])
       .then(([activityData, userData]) => {
         setActivities(activityData);

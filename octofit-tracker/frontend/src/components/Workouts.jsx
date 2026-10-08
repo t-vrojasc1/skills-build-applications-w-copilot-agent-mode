@@ -1,30 +1,16 @@
 import { useEffect, useState } from 'react';
-import { apiBase } from '../api';
-
-const fallbackWorkouts = [
-  { name: 'Tempo Run', difficulty: 'intermediate', durationMinutes: 30 },
-  { name: 'Core Blast', difficulty: 'beginner', durationMinutes: 20 },
-  { name: 'Hill Repeats', difficulty: 'advanced', durationMinutes: 45 },
-  { name: 'Recovery Flow', difficulty: 'beginner', durationMinutes: 15 },
-];
+import { getCollection } from '../api';
 
 export default function Workouts() {
-  const [workouts, setWorkouts] = useState(fallbackWorkouts);
+  const [workouts, setWorkouts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    fetch(`${apiBase}/api/workouts/`)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Unable to fetch workouts');
-        }
-        return response.json();
-      })
-      .then((data) => {
-        if (Array.isArray(data) && data.length > 0) {
-          setWorkouts(data);
-        }
-      })
-      .catch(() => setWorkouts(fallbackWorkouts));
+    getCollection('/api/workouts/', 'Unable to load workouts.')
+      .then(setWorkouts)
+      .catch((requestError) => setError(requestError.message))
+      .finally(() => setLoading(false));
   }, []);
 
   return (
@@ -33,6 +19,7 @@ export default function Workouts() {
         <h2>Workouts</h2>
         <span className="badge">{workouts.length} plans</span>
       </div>
+      {error && <p className="alert alert-danger" role="alert">{error}</p>}
       <div className="table-responsive">
         <table className="table table-striped align-middle">
           <thead>
@@ -43,8 +30,12 @@ export default function Workouts() {
             </tr>
           </thead>
           <tbody>
-            {workouts.map((workout) => (
-              <tr key={workout.name}>
+            {loading ? (
+              <tr><td colSpan="3">Loading workouts…</td></tr>
+            ) : workouts.length === 0 ? (
+              <tr><td className="empty-state" colSpan="3">No workouts available yet.</td></tr>
+            ) : workouts.map((workout) => (
+              <tr key={workout._id || workout.name}>
                 <td>{workout.name}</td>
                 <td>{workout.difficulty || 'beginner'}</td>
                 <td>{workout.durationMinutes ?? 0} min</td>

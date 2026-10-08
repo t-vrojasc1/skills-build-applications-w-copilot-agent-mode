@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { apiBase } from '../api';
+import { apiBase, getCollection } from '../api';
 
 const initialForm = {
   username: '',
@@ -15,14 +15,8 @@ export default function Users() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    fetch(`${apiBase}/api/users/`)
-      .then(async (response) => {
-        const data = await response.json();
-        if (!response.ok) {
-          throw new Error(data.error || 'Unable to load athletes.');
-        }
-        setUsers(data);
-      })
+    getCollection('/api/users/', 'Unable to load athletes.')
+      .then(setUsers)
       .catch((requestError) => setError(requestError.message))
       .finally(() => setLoading(false));
   }, []);
