@@ -75,6 +75,7 @@ function App() {
             <NavLink
               key={item.to}
               to={item.to}
+              end={item.to === '/'}
               className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
             >
               {item.label}
@@ -91,6 +92,7 @@ function App() {
           <Route path="/activities" element={<Activities />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/workouts" element={<Workouts />} />
+          <Route path="*" element={<section className="panel"><h2>Page not found</h2></section>} />
         </Routes>
       </main>
     </div>

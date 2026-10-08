@@ -1,28 +1,17 @@
 import { useEffect, useState } from 'react';
-import { apiBase } from '../api';
-
-const fallbackTeams = [
-  { name: 'Velocity Crew', teamGoal: 'Hit 500 combined active minutes each week', members: 2 },
-  { name: 'Core Circuit', teamGoal: 'Build consistency and mobility streaks', members: 2 },
-];
+import { apiBase, getCollection } from '../api';
 
 export default function Teams() {
-  const [teams, setTeams] = useState(fallbackTeams);
+  const [teams, setTeams] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     fetch(`${apiBase}/api/teams/`)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Unable to fetch teams');
-        }
-        return response.json();
-      })
-      .then((data) => {
-        if (Array.isArray(data) && data.length > 0) {
-          setTeams(data);
-        }
-      })
-      .catch(() => setTeams(fallbackTeams));
+      .then((response) => getCollection(response, 'Unable to load teams.'))
+      .then(setTeams)
+      .catch((requestError) => setError(requestError.message))
+      .finally(() => setLoading(false));
   }, []);
 
   return (
@@ -31,6 +20,7 @@ export default function Teams() {
         <h2>Teams</h2>
         <span className="badge">{teams.length} squads</span>
       </div>
+      {error && <p className="alert alert-danger" role="alert">{error}</p>}
       <div className="table-responsive">
         <table className="table table-striped align-middle">
           <thead>
@@ -41,10 +31,14 @@ export default function Teams() {
             </tr>
           </thead>
           <tbody>
-            {teams.map((team) => (
-              <tr key={team.name}>
+            {loading ? (
+              <tr><td colSpan="3">Loading teams…</td></tr>
+            ) : teams.length === 0 ? (
+              <tr><td className="empty-state" colSpan="3">No teams yet.</td></tr>
+            ) : teams.map((team) => (
+              <tr key={team._id || team.name}>
                 <td>{team.name}</td>
-                <td>{team.members?.length ?? team.members ?? 0}</td>
+                <td>{Array.isArray(team.members) ? team.members.length : team.members ?? 0}</td>
                 <td>{team.teamGoal || 'Stay active together'}</td>
               </tr>
             ))}
